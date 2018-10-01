@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project basedir="." name="ajax" default="dft">
+    <target name="dft">
+    	<echo message="hello "></echo>
+    </target>
+	<property name="tomcat8.5_home" value="D:\apache-tomcat-8.5.32\wtpwebapps"></property>
+	<target name="javaDoc" description="生成java文档">
+		<javadoc sourcepath="${basedir}/src" 
+			destdir="d:/a/doc"
+			package="cn.hncu.*"
+			encoding="utf-8"
+			docencoding="utf-8"
+			charset="utf-8"
+		/>
+		
+	</target>
+	
+	<target name="cp" description="拷贝项目到Tomcat工作空间">
+		<copy todir="${tomcat8.5_home}/${ant.project.name}" >
+			<fileset dir="${basedir}/WebContent">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+		<copy todir="${tomcat8.5_home}/${ant.project.name}/WEB-INF">
+			<fileset dir="${basedir}/build">
+				<include name="**/*.*"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="del" description="删除Tomcat工作空间中的当前项目">
+		<delete dir="${tomcat8.5_home}/${ant.project.name}">
+		</delete>
+	</target>
+	<!-- 定义参数 -->
+	<property name="driver" value="com.mysql.jdbc.Driver"></property>
+	<property name="url" value="jdbc:mysql://127.0.0.1:3306/mysql?useUnicode=true&amp;characterEncoding=UTF-8"></property>
+	<property name="username" value="root"></property>
+	<property name="password" value="1234"></property>
+	<target name="create" description="创建数据库和数据表">
+		<sql userid="${username}" url="${url}" password="${password}" driver="${driver}">
+			<fileset dir="${basedir}/sql/create">
+				<include name="**/*.*"/>
+			</fileset>
+			<classpath>
+				<fileset dir="${basedir}/WebContent/WEB-INF/lib">
+					<include name="**/*.*"/>
+				</fileset>
+			</classpath>
+		</sql>
+	</target>
+	<target name="init" depends="create" description="初始化一些参数">
+		<sql userid="${username}" url="${url}" password="${password}" driver="${driver}">
+			<fileset dir="${basedir}/sql/init">
+				<include name="**/*.*"/>
+			</fileset>
+			<classpath>
+				<fileset dir="${basedir}/WebContent/WEB-INF/lib">
+					<include name="**/*.*"/>
+				</fileset>
+			</classpath>
+		</sql>
+	</target>
+	
+</project>
